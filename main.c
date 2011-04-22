@@ -123,6 +123,8 @@ unsigned char tmp,tmp2;
 int index_from, index_to;//for one line, go from to
 int ligne;
 
+unsigned char where_in_time_int=0;//decompose image drawing 
+
 
 //en vrai y de 7 a 74
 void set_pixel(unsigned char x, unsigned char y, unsigned char c)//0<=x<104   0<=y<76   0<=c<4
@@ -151,41 +153,6 @@ void set_pixel(unsigned char x, unsigned char y, unsigned char c)//0<=x<104   0<
     memVideo[i]&=0x3F;
     memVideo[i]|=(c%4)<<6;
   }
-}
-
-
-void begin_frame(){
-  PORTB = _BLACK;//no signal  
-  // SYNC VERT A
-  // ligne 1 LONG SYNC  
-  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_LONG_SYNC);  SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_LONG_SYNC_DELAI);
-  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_LONG_SYNC);  SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_LONG_SYNC_DELAI);
-  // ligne 2 LONG SYNC
-  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_LONG_SYNC);  SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_LONG_SYNC_DELAI);
-  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_LONG_SYNC);  SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_LONG_SYNC_DELAI);
-  // ligne 3 MIXTE SYNC
-  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_LONG_SYNC);  SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_LONG_SYNC_DELAI);
-  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC); SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_SHORT_SYNC_DELAI);
-  // ligne 4 SHORT SYNC
-  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC); SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_SHORT_SYNC_DELAI);
-  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC); SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_SHORT_SYNC_DELAI);
-  // ligne 5 SHORT SYNC
-  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC); SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_SHORT_SYNC_DELAI);
-  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC); SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_SHORT_SYNC_DELAI);
-}
-
-void end_frame() {
-  PORTB = _BLACK;//no signal
-  // SYNC VERT B
-  // ligne 310 SHORT SYNC
-  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);  SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_SHORT_SYNC_DELAI);
-  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);  SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_SHORT_SYNC_DELAI);
-  // ligne 311 SHORT SYNC
-  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);  SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_SHORT_SYNC_DELAI);
-  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);  SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_SHORT_SYNC_DELAI);
-  // ligne 312 SHORT SYNC
-  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);  SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_SHORT_SYNC_DELAI);
-  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);  SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_SHORT_SYNC_DELAI);
 }
 
 
@@ -225,14 +192,131 @@ void draw_line(){
 //ce qui se fait a chaque interruption
 ISR(TIMER1_COMPA_vect)
 {//il y a de quoi dessiner toute l'image. On découpe aux grandes pauses
-    begin_frame();
-    for (ligne = 0; ligne < 304; ligne++)
-    {
-      draw_line();
-    }
-    end_frame();
+
+  //suivant la valeur de where_in_time_int, on fait une partie du dessin,
+  //puis on dit quand aura lieu la prochaine int, et on met le compteur de temps a zero
+  switch(where_in_time_int)
+  {
+      case 0:
+  //begin frame
+  PORTB = _BLACK;//no signal  
+  // SYNC VERT A
+  // ligne 1 LONG SYNC
+  SYNC_PORT &= ~_BV(SYNC_PIN); //_delay_us(_LONG_SYNC);
+  OCR1A=_LONG_SYNC<<1;//equivalent au delais en us
+        break;
+
+      case 1:
+  SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_LONG_SYNC_DELAI);
+  SYNC_PORT &= ~_BV(SYNC_PIN); //_delay_us(_LONG_SYNC);
+  OCR1A=_LONG_SYNC<<1;//equivalent au delais en us
+        break;
+
+      case 2:
+  SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_LONG_SYNC_DELAI);
+  // ligne 2 LONG SYNC
+  SYNC_PORT &= ~_BV(SYNC_PIN); //_delay_us(_LONG_SYNC);
+  OCR1A=_LONG_SYNC<<1;//equivalent au delais en us
+        break;
+
+      case 3:
+  SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_LONG_SYNC_DELAI);
+  SYNC_PORT &= ~_BV(SYNC_PIN); //_delay_us(_LONG_SYNC);
+  OCR1A=_LONG_SYNC<<1;//equivalent au delais en us
+        break;
+
+      case 4:
+  SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_LONG_SYNC_DELAI);
+  // ligne 3 MIXTE SYNC
+  SYNC_PORT &= ~_BV(SYNC_PIN); //_delay_us(_LONG_SYNC);
+  OCR1A=_LONG_SYNC<<1;//equivalent au delais en us
+        break;
+
+      case 5:
+  SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_LONG_SYNC_DELAI);
+  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
+  SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
+  OCR1A=_SHORT_SYNC_DELAI<<1;//equivalent au delais en us
+        break;
+
+      case 6:
+  // ligne 4 SHORT SYNC
+  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
+  SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
+  OCR1A=_SHORT_SYNC_DELAI<<1;//equivalent au delais en us
+        break;
+
+      case 7:
+  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
+  SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
+  OCR1A=_SHORT_SYNC_DELAI<<1;//equivalent au delais en us
+        break;
+
+      case 8:
+  // ligne 5 SHORT SYNC
+  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
+  SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
+  OCR1A=_SHORT_SYNC_DELAI<<1;//equivalent au delais en us
+        break;
+
+      case 9:
+  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
+  SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
+  OCR1A=_SHORT_SYNC_DELAI<<1;//equivalent au delais en us
+        break;
+
+      case 10:
+  //every line
+  for (ligne = 0; ligne < 304; ligne++)
+  {
+    draw_line();
+  }
+  //end frame
+  PORTB = _BLACK;//no signal
+  // SYNC VERT B
+  // ligne 310 SHORT SYNC
+  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
+  SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
+  OCR1A=_SHORT_SYNC_DELAI<<1;//equivalent au delais en us
+        break;
+
+      case 11:
+  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
+  SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
+  OCR1A=_SHORT_SYNC_DELAI<<1;//equivalent au delais en us
+        break;
+
+      case 12:
+  // ligne 311 SHORT SYNC
+  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
+  SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
+  OCR1A=_SHORT_SYNC_DELAI<<1;//equivalent au delais en us
+        break;
+
+      case 13:
+  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
+  SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
+  OCR1A=_SHORT_SYNC_DELAI<<1;//equivalent au delais en us
+        break;
+
+      case 14:
+  // ligne 312 SHORT SYNC
+  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
+  SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
+  OCR1A=_SHORT_SYNC_DELAI<<1;//equivalent au delais en us
+        break;
+
+      case 15:
+  SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
+  SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
+  OCR1A=_SHORT_SYNC_DELAI<<1;//equivalent au delais en us
+        break;
+ }
+  where_in_time_int++;
+  if (where_in_time_int>15) where_in_time_int=0;
+  TCNT1=0;//remise a zero du compteur
+
  
-    TCNT1=0;//remise a zero du compteur
 }
 
 
@@ -244,9 +328,9 @@ int main()
     TCCR1B=0;//reinit les 3 registres config de TCNT1 (timer/counter1)
     TCCR1A=0;
     TCCR1C=0;
-    OCR1A = 0x1;//temps de comparaison A pour TCNT1
+    OCR1A = 0x100;//temps de comparaison A pour TCNT1
     //OCR1B = 0x4ff;//temps de comparaison B pour TCNT1
-    TCCR1B|=(0<<CS12)|(1<<CS11)|(0<<CS10);//prescaleur : 0 1 0 => 16 => 65535/(16000000/16) = 1/16s, 1 sur le compteur = 1us
+    TCCR1B|=(0<<CS12)|(1<<CS11)|(0<<CS10);//prescaleur : 0 1 0 => 8 => 65535/(16000000/16) = 1/16s, 1 sur le compteur = 0.5us
     TIMSK1|=(1<<OCIE1A)|(0<<OCIE1B)|(0<<TOIE1);//on veut des interruptions pour temps A seulement
     //Enable Global Interrupts
     sei();  
