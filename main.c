@@ -23,6 +23,12 @@
 #define SIG_2_PORT PORTB
 #define SIG_2_PIN PB1
 
+#define INPUT_DDR DDRD
+#define INPUT_PORT PORTD
+#define INPUT_PIN_0 PD0
+#define INPUT_PIN_1 PD1
+
+
 
 //colors
 #define _BLACK  0x00
@@ -129,30 +135,30 @@ unsigned char where_in_time_int=0;//decompose image drawing
 //en vrai y de 7 a 74
 void set_pixel(unsigned char x, unsigned char y, unsigned char c)//0<=x<104   0<=y<76   0<=c<4
 {
-  int x_=x>>2;
-  int y_=y;
-  int i=y_*_NB_BYTES_LINE+x_;
-  //memVideo[i]=c;
-  if (x%4==0)
-  {
-    memVideo[i]&=0xFC;
-    memVideo[i]|=c%4;
-  }
-  if (x%4==1)
-  {
-    memVideo[i]&=0xF3;
-    memVideo[i]|=(c%4)<<2;
-  }
-  if (x%4==2)
-  {
-    memVideo[i]&=0xCF;
-    memVideo[i]|=(c%4)<<4;
-  }
-  if (x%4==3)
-  {
-    memVideo[i]&=0x3F;
-    memVideo[i]|=(c%4)<<6;
-  }
+    int x_=x>>2;
+    int y_=y;
+    int i=y_*_NB_BYTES_LINE+x_;
+    //memVideo[i]=c;
+    if (x%4==0)
+    {
+        memVideo[i]&=0xFC;
+        memVideo[i]|=c%4;
+    }
+    if (x%4==1)
+    {
+        memVideo[i]&=0xF3;
+        memVideo[i]|=(c%4)<<2;
+    }
+    if (x%4==2)
+    {
+        memVideo[i]&=0xCF;
+        memVideo[i]|=(c%4)<<4;
+    }
+    if (x%4==3)
+    {
+        memVideo[i]&=0x3F;
+        memVideo[i]|=(c%4)<<6;
+    }
 }
 
 
@@ -168,17 +174,17 @@ unsigned char get_pixel(unsigned char x, unsigned char y)//0<=x<104   0<=y<76   
     {
         c = memVideo[i] & 0x03;
     }
-    if (x%4==1)
+    else if (x%4==1)
     {
         c = memVideo[i] & 0x0C;
         c=c>>2;
     }
-    if (x%4==2)
+    else if (x%4==2)
     {
         c = memVideo[i] & 0x30;
         c=c>>4;
     }
-    if (x%4==3)
+    else
     {
         c = memVideo[i] & 0xC0;
         c=c>>6;
@@ -186,7 +192,18 @@ unsigned char get_pixel(unsigned char x, unsigned char y)//0<=x<104   0<=y<76   
     return(c);
 }
 
-void draw_line(){
+void cls()
+{
+    int i;
+    for (i=0;i<_NB_BYTES_LINE*_NB_LIGNES;i++)
+    {
+        memVideo[i]=0;
+    }
+}
+
+
+void draw_video_line()
+{
     //** synchro
     PORTB = 0;//no signal
     // HSync
@@ -205,15 +222,33 @@ void draw_line(){
     tmp=memVideo[index_from];//4 instructions
     for (; index_from < index_to;) //boucle : 5  cycles car index int (on veut passer 32 instructions par tour)
     {
-        PORTB = tmp%4;//2 instruction
+/*        PORTB = tmp%4;//2 instruction
         tmp2=tmp;//2 instructions
         tmp2=tmp2>>2;//4 instructions (?)
+        
         PORTB = tmp2%4;//2 instruction
         index_from++;// 1 instr
         tmp2=tmp2>>2;//4 instructions (?)
+        
         PORTB = tmp2%4;//2 instruction
         tmp=memVideo[index_from];//4 instructions
         tmp2=tmp2>>2;//4 instructions (?)
+        
+        PORTB = tmp2%4;//2 instruction
+*/
+
+        PORTB = tmp%4;//2 instruction
+        tmp2=tmp;//2 instructions
+        tmp2=tmp2>>2;//4 instructions (?)
+        index_from++;// 1 instr
+        
+        PORTB = tmp2%4;//2 instruction
+        tmp=memVideo[index_from];//4 instructions
+        tmp2=tmp2>>2;//4 instructions (?)
+        
+        PORTB = tmp2%4;//2 instruction
+        tmp2=tmp2>>2;//4 instructions (?)
+        
         PORTB = tmp2%4;//2 instruction
     }
 }
@@ -299,7 +334,7 @@ ISR(TIMER1_COMPA_vect)
           //every line
           for (ligne = 0; ligne < 304; ligne++)
           {
-            draw_line();
+            draw_video_line();
           }
           //end frame
           PORTB = _BLACK;//no signal
@@ -362,11 +397,16 @@ int main()
     //Enable Global Interrupts
     sei();  
   
+    INPUT_DDR=0;
     SYNC_DDR |= _BV(SYNC_PIN);
     SIG_1_DDR |= _BV(SIG_1_PIN);
     SIG_2_DDR |= _BV(SIG_2_PIN);
 
-    unsigned char c=0;
+    //prepare input
+    /*INPUT_DDR &= ~_BV(INPUT_PIN_0);
+    INPUT_DDR &= ~_BV(INPUT_PIN_1);*/
+
+    //unsigned char c=0;
 
     int x=0;
     int y=0;
@@ -376,17 +416,24 @@ int main()
 
     while(1)
     {
+        //cls();
         //ball
         set_pixel(x,y,ball_previous_pix_color);
-        x=x+vx;
+
+        //if (INPUT_PORT & _BV(INPUT_PIN_0) != 0) x--;
+        //if (INPUT_PORT & _BV(INPUT_PIN_1) != 0) x++;
+        if (PIND & (4)) x--;
+        if (PIND & (8)) x++;
+
+        //x=x+vx;
         y=y+vy;
         if (x>=104) {vx=-vx;x=103;}
         if (x<0)    {vx=-vx;x=0;}
-        if (y>=76)  {vy=-vy;y=76;}
+        if (y>=76)  {vy=-vy;y=75;}
         if (y<0)    {vy=-vy;y=0;}
         ball_previous_pix_color=get_pixel(x,y);
         set_pixel(x,y,(((~ball_previous_pix_color)&3)>>1)*3);
-        _delay_ms(10);
+        _delay_ms(1);
         
 /*        for (c=0;c<4;c++)
             for (y=0;y<76;y++)
