@@ -10,6 +10,9 @@
   pin 8 : signal low : 1428 ohm
   pin 9 : signal heigh : 675 ohm
     => both to video signal
+  
+  input : pin 2 and pin 3
+
  */
 
 #define SYNC_DDR DDRD
@@ -24,9 +27,9 @@
 #define SIG_2_PIN PB1
 
 #define INPUT_DDR DDRD
-#define INPUT_PORT PORTD
-#define INPUT_PIN_0 PD0
-#define INPUT_PIN_1 PD1
+#define INPUT_PORT PIND //pourquoi pas PORTD?
+#define INPUT_PIN_0 PD2
+#define INPUT_PIN_1 PD3
 
 
 
@@ -420,10 +423,10 @@ int main()
         //ball
         set_pixel(x,y,ball_previous_pix_color);
 
-        //if (INPUT_PORT & _BV(INPUT_PIN_0) != 0) x--;
-        //if (INPUT_PORT & _BV(INPUT_PIN_1) != 0) x++;
-        if (PIND & (4)) x--;
-        if (PIND & (8)) x++;
+        if ((INPUT_PORT & _BV(INPUT_PIN_0))) x--;
+        if ((INPUT_PORT & _BV(INPUT_PIN_1))) x++;
+        //if (PIND & (4)) x--;//pin 2
+        //if (PIND & (8)) x++;//pin 3
 
         //x=x+vx;
         y=y+vy;
