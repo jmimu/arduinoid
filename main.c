@@ -431,9 +431,9 @@ ISR(TIMER1_COMPA_vect)
                 PORTB = _BLACK;
                 PORTB = _BLACK;
                 PORTB = _BLACK;
-                PORTB = _BLACK;
+                //PORTB = _BLACK;
                 
-                PORTB = _BLACK;
+                //PORTB = _BLACK;
                 //PORTB = _BLACK;
                 //PORTB = _BLACK;
                 //PORTB = _BLACK;
@@ -464,12 +464,12 @@ ISR(TIMER1_COMPA_vect)
                 tmp2=tmp2>>2;//3 instructions (?)
                 
                 PORTB = tmp2%4;//1 instruction
-                tmp2=tmp2>>2;//4 instructions (?)
+                tmp2=tmp2>>2;//3 instructions (?)
                 
-                /*//PORTC=0;//1 instr
+                //PORTC=0;//1 instr
                 
-                //PORTB = tmp2%4;//2 instruction
-                PORTB = _BLACK;
+                PORTB = tmp2%4;//2 instruction
+                /*PORTB = _BLACK;
                 PORTB = _BLACK;
                 PORTB = _BLACK;
                 PORTB = _BLACK;*/
@@ -632,9 +632,9 @@ ISR(TIMER1_COMPA_vect)
                 PORTB = _BLACK;
                 PORTB = _BLACK;
                 PORTB = _BLACK;
-                PORTB = _BLACK;
+                //PORTB = _BLACK;
                 
-                PORTB = _BLACK;
+                //PORTB = _BLACK;
                 //PORTB = _BLACK;
                 //PORTB = _BLACK;
                 //PORTB = _BLACK;
@@ -665,12 +665,12 @@ ISR(TIMER1_COMPA_vect)
                 tmp2=tmp2>>2;//3 instructions (?)
                 
                 PORTB = tmp2%4;//1 instruction
-                tmp2=tmp2>>2;//4 instructions (?)
+                tmp2=tmp2>>2;//3 instructions (?)
                 
-                /*//PORTC=0;//1 instr
+                //PORTC=0;//1 instr
                 
-                //PORTB = tmp2%4;//2 instruction
-                PORTB = _BLACK;
+                PORTB = tmp2%4;//2 instruction
+                /*PORTB = _BLACK;
                 PORTB = _BLACK;
                 PORTB = _BLACK;
                 PORTB = _BLACK;*/
