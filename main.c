@@ -407,7 +407,7 @@ ISR(TIMER1_COMPA_vect)
             // Black
             SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(7);//avant, 9
             
-            PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
+            PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;  //  PORTB = _BLACK;  //  PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
             
             //PORTB = _WHITE;    _delay_us(52);
             //index_from=0;
@@ -424,13 +424,15 @@ ISR(TIMER1_COMPA_vect)
             for (; index_from < index_to;) //boucle : 5  cycles car index int (on veut passer 32 instructions par tour)
             {
                 //for 26 instructions
+                //have to add 7 instructions to loose time
+                
+                //PORTB = _BLACK;//1 instr to loose time
+/*                PORTB = _BLACK;
                 PORTB = _BLACK;
                 PORTB = _BLACK;
                 PORTB = _BLACK;
                 PORTB = _BLACK;
-                PORTB = _BLACK;
-                PORTB = _BLACK;
-                PORTB = _BLACK;
+                PORTB = _BLACK;*/
                 //PORTB = _BLACK;
                 
                 //PORTB = _BLACK;
@@ -455,8 +457,11 @@ ISR(TIMER1_COMPA_vect)
                 //PORTB = _BLACK;
                 //PORTB = _BLACK;
                 PORTB = tmp%4;//1 instruction
+                PORTB = PORTB;//2 inst to loose time
                 tmp2=tmp;//1 instructions
                 tmp2=tmp2>>2;//4 instructions (?)
+                index_from++;// 1 instr (!)
+                index_from--;// 1 instr (!)
                 index_from++;// 1 instr (!)
                 
                 PORTB = tmp2%4;//1 instruction
@@ -464,15 +469,13 @@ ISR(TIMER1_COMPA_vect)
                 tmp2=tmp2>>2;//3 instructions (?)
                 
                 PORTB = tmp2%4;//1 instruction
+                PORTB = PORTB;//2 inst to loose time
                 tmp2=tmp2>>2;//3 instructions (?)
                 
                 //PORTC=0;//1 instr
                 
-                PORTB = tmp2%4;//2 instruction
-                /*PORTB = _BLACK;
-                PORTB = _BLACK;
-                PORTB = _BLACK;
-                PORTB = _BLACK;*/
+                PORTB = tmp2%4;//2 instructions
+                PORTB = tmp2%4;//1 instruction to loose time
                 
             }
             
@@ -608,7 +611,7 @@ ISR(TIMER1_COMPA_vect)
             // Black
             SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(7);//avant, 9
             
-            PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
+            PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;   // PORTB = _BLACK;  //  PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
             
             //PORTB = _WHITE;    _delay_us(52);
             //index_from=0;
@@ -625,13 +628,15 @@ ISR(TIMER1_COMPA_vect)
             for (; index_from < index_to;) //boucle : 5  cycles car index int (on veut passer 32 instructions par tour)
             {
                 //for 26 instructions
+                
+                //have to add 7 instructions to loose time
+                //PORTB = _BLACK;//1 instr to loose time
+/*                PORTB = _BLACK;
                 PORTB = _BLACK;
                 PORTB = _BLACK;
                 PORTB = _BLACK;
                 PORTB = _BLACK;
-                PORTB = _BLACK;
-                PORTB = _BLACK;
-                PORTB = _BLACK;
+                PORTB = _BLACK;*/
                 //PORTB = _BLACK;
                 
                 //PORTB = _BLACK;
@@ -656,8 +661,11 @@ ISR(TIMER1_COMPA_vect)
                 //PORTB = _BLACK;
                 //PORTB = _BLACK;
                 PORTB = tmp%4;//1 instruction
+                PORTB = PORTB;//2 inst to loose time
                 tmp2=tmp;//1 instructions
                 tmp2=tmp2>>2;//4 instructions (?)
+                index_from++;// 1 instr (!)
+                index_from--;// 1 instr (!)
                 index_from++;// 1 instr (!)
                 
                 PORTB = tmp2%4;//1 instruction
@@ -665,15 +673,13 @@ ISR(TIMER1_COMPA_vect)
                 tmp2=tmp2>>2;//3 instructions (?)
                 
                 PORTB = tmp2%4;//1 instruction
+                PORTB = PORTB;//2 inst to loose time
                 tmp2=tmp2>>2;//3 instructions (?)
                 
                 //PORTC=0;//1 instr
                 
-                PORTB = tmp2%4;//2 instruction
-                /*PORTB = _BLACK;
-                PORTB = _BLACK;
-                PORTB = _BLACK;
-                PORTB = _BLACK;*/
+                PORTB = tmp2%4;//2 instructions
+                PORTB = tmp2%4;//1 instruction to loose time
             }
             
             /*SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
