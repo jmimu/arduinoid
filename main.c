@@ -116,14 +116,14 @@ unsigned char memVideo[_NB_BYTES_LINE*_NB_LIGNES]={175,214,26,75,175,214,91,90,1
 255,95,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,5,128,168,170,170,10,84,
 255,95,149,86,149,86,149,86,149,86,149,86,149,86,149,86,149,86,149,22,234,168,170,170,170,2,
 255,95,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,21,255,163,171,174,170,170,
-254,95,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,252,163,170,170,170,171,//
+254,95,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,252,163,170,170,170,171};/*,//
 190,111,85,101,85,101,85,101,85,101,85,101,85,101,85,101,85,101,85,101,168,170,170,170,174,170,
 255,95,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,170,170,170,170,170,
 255,95,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,
 255,159,86,149,86,149,86,149,86,149,86,149,86,149,86,149,86,149,86,149,86,149,86,149,86,149,
 255,95,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,
 255,95,149,86,149,86,149,86,149,86,149,86,149,86,149,86,149,86,149,86,149,86,149,86,149,86,
-255,95,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85};
+255,95,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85};*/
 
 unsigned char tmp,tmp2;
 int index_from, index_to;//for one line, go from to
@@ -395,10 +395,12 @@ ISR(TIMER1_COMPA_vect)
           {
             //draw_video_line();
             SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
-            SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(60);
+            SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(59);
+            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;    //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;
+            //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;    //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;
           }
           //every line
-          for (ligne = 28; ligne < 304; ligne++)//0-304
+          for (ligne = 0; ligne < 276; ligne++)//0-304
           {
             //** synchro
             PORTB = 0;//no signal
@@ -554,10 +556,13 @@ ISR(TIMER1_COMPA_vect)
           {
             //draw_video_line();
             SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
-            SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(60);
+            SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(59);
+            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;    //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;
+            //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;    //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;
+
           }
           //every line
-          for (ligne = 28; ligne < 304; ligne++)//0-304
+          for (ligne = 0; ligne < 276; ligne++)//0-304
           {
             //** synchro
             PORTB = 0;//no signal
