@@ -206,6 +206,20 @@ void cls()
         memVideo[i]=0;
     }
 }
+void cls_some_lines(int y1,int y2)
+{
+    int i,j,y;
+    j=y1*_NB_BYTES_LINE;
+    for (y=y1;y<=y2;y++)
+    {
+        for (i=0;i<_NB_BYTES_LINE;i++)
+        {
+            memVideo[j]=0;
+            j++;
+        }
+        //j+=_NB_BYTES_LINE;
+    }
+}
 
 // draw a tile 8*4 pix at coords x, y, x=4*x_
 // i = type of brick
@@ -699,14 +713,11 @@ int main()
 
     while(1)
     {
-        //cls();
-        //ball
-        set_pixel(x,y,ball_previous_pix_color);
-
         if ((INPUT_PORT & _BV(INPUT_PIN_0))) x_player--;
         if ((INPUT_PORT & _BV(INPUT_PIN_1))) x_player++;
-        //if (PIND & (4)) x--;//pin 2
-        //if (PIND & (8)) x++;//pin 3
+
+        //ball
+        set_pixel(x,y,ball_previous_pix_color);
 
         x=x+vx;
         y=y+vy;
@@ -717,6 +728,8 @@ int main()
 
         if (x_player>=104-40) {x_player=103-40;}
         if (x_player<0)    {x_player=0;}
+
+        cls_some_lines(y_player,y_player+3);
         draw_tile( x_player,y_player,0);
         draw_tile( x_player+8,y_player,1);
         draw_tile( x_player+16,y_player,2);
@@ -724,8 +737,8 @@ int main()
 
         ball_previous_pix_color=get_pixel(x,y);
         set_pixel(x,y,(((~ball_previous_pix_color)&3)>>1)*3);
-        _delay_ms(1);
         
+        _delay_us(500);
 /*        for (c=0;c<4;c++)
             for (y=0;y<76;y++)
                 for (x=y%2;x<104;x+=2)
