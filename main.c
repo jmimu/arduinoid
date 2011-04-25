@@ -643,6 +643,8 @@ ISR(TIMER1_COMPA_vect)
 
 #define BLOCKS_X 12
 #define BLOCKS_Y 8
+#define BALL_W 2
+#define BALL_H 2
 
 
 int main()
@@ -679,7 +681,7 @@ int main()
     int y_player=55;
     unsigned char ball_previous_pix_color=0;
 
-    //cls();
+    cls();
     draw_all_blocks(BLOCKS_X,BLOCKS_Y);
     while(1)
     {
@@ -699,23 +701,31 @@ int main()
                 {
                     vx=-vx;vy=-vy;blocks[j][i]--;
                 }*/
-                if ((blocks[j][i]>=0) && ((x==(BLOCKS_X+(i<<3))) || (x==(BLOCKS_X+(i<<3))+7)) && (y>=(BLOCKS_Y+(j<<2))) && (y<(BLOCKS_Y+(j<<2))+4))
+                if ((blocks[j][i]>=0) && (vx>0) && (x==(BLOCKS_X+(i<<3)-BALL_W+1)) && (y>=(BLOCKS_Y+(j<<2)-BALL_H-1)) && (y<(BLOCKS_Y+(j<<2))+4))
                 {
-                    vx=-vx;blocks[j][i]--;draw_tile(BLOCKS_X+(i<<3),BLOCKS_Y+(j<<2),blocks[j][i]);x=x+vx;
+                    vx=-1;blocks[j][i]--;draw_tile(BLOCKS_X+(i<<3),BLOCKS_Y+(j<<2),blocks[j][i]);x=x+vx;
                 }
-                if ((blocks[j][i]>=0) && (x>=(BLOCKS_X+(i<<3))) && (x<(BLOCKS_X+(i<<3))+8) && ((y==(BLOCKS_Y+(j<<2))) || (y==(BLOCKS_Y+(j<<2))+3)))
+                if ((blocks[j][i]>=0) && (vx<0) && (x==(BLOCKS_X+(i<<3))+8) && (y>=(BLOCKS_Y+(j<<2)-BALL_H-1)) && (y<(BLOCKS_Y+(j<<2))+4))
                 {
-                    vy=-vy;blocks[j][i]--;draw_tile(BLOCKS_X+(i<<3),BLOCKS_Y+(j<<2),blocks[j][i]);y=y+vy;
+                    vx=1;blocks[j][i]--;draw_tile(BLOCKS_X+(i<<3),BLOCKS_Y+(j<<2),blocks[j][i]);x=x+vx;
+                }
+                if ((blocks[j][i]>=0) && (vy>0) && (x>=(BLOCKS_X+(i<<3)-BALL_W+1)) && (x<(BLOCKS_X+(i<<3))+8) && (y==(BLOCKS_Y+(j<<2)-BALL_H-1)) )
+                {
+                    vy=-1;blocks[j][i]--;draw_tile(BLOCKS_X+(i<<3),BLOCKS_Y+(j<<2),blocks[j][i]);y=y+vy;
+                }
+                if ((blocks[j][i]>=0) && (vy<0) && (x>=(BLOCKS_X+(i<<3)-BALL_W+1)) && (x<(BLOCKS_X+(i<<3))+8) && (y==(BLOCKS_Y+(j<<2))+4))
+                {
+                    vy=1;blocks[j][i]--;draw_tile(BLOCKS_X+(i<<3),BLOCKS_Y+(j<<2),blocks[j][i]);y=y+vy;
                 }
             }
         if ((x>=x_player) && (x<x_player+32) && (y==y_player) && (vy>0))
         {
-            vy=-vy;y=y+vy;
+            vy=-1;y=y+vy;
         }
         
         if (x>=96) {vx=-vx;x=95;}
         if (x<8)    {vx=-vx;x=8;}
-        if (y>=64)  {vy=-vy;y=63;}
+        if (y>=64)  {vy=-vy;y=63;gameover_screen();}
         if (y<4)    {vy=-vy;y=4;}
             
         if (x_player>=96-28) {x_player=96-1-28;}
@@ -734,15 +744,20 @@ int main()
         //draw_tile( x_player+32,y_player,3);
         //draw_tile( x_player+40,y_player,-1);
 
-        //ball_previous_pix_color=get_pixel(x,y);
-        //set_pixel(x,y,(((~ball_previous_pix_color)&3)>>1)*3);
-        /*set_pixel(x-1,y-1,_BLACK);
-        set_pixel(x+1,y-1,_BLACK);
-        set_pixel(x+1,y+1,_BLACK);
-        set_pixel(x-1,y+1,_BLACK);*/
-        set_pixel(x_old,y_old,_BLACK);
-        set_pixel(x,y,_WHITE);
+        //set_pixel(x_old,y_old,_BLACK);
+        //set_pixel(x,y,_WHITE);
         
+        set_pixel(x_old-1,y_old,_BLACK);
+        set_pixel(x_old,y_old-1,_BLACK);
+        set_pixel(x_old+1,y_old,_BLACK);
+        set_pixel(x_old,y_old+1,_BLACK);
+        set_pixel(x_old,y_old,_BLACK);
+        set_pixel(x-1,y,_WHITE);
+        set_pixel(x,y-1,_WHITE);
+        set_pixel(x+1,y,_GRAY_L);
+        set_pixel(x,y+1,_GRAY_L);
+        set_pixel(x,y,_GRAY_H);
+
         //_delay_us(500);
 
     }
@@ -760,4 +775,7 @@ void contact_with_all_blocks(unsigned int x,unsigned int y)
     
 }
 
+void gameover_screen()
+{
+}
 
