@@ -410,9 +410,12 @@ ISR(TIMER1_COMPA_vect)
             PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
             
             //PORTB = _WHITE;    _delay_us(52);
-            index_from=0;
-            index_to=26;
-
+            //index_from=0;
+            //index_to=26;
+            
+            index_from=(ligne>>2)*_NB_BYTES_LINE; //la multiplication fait environ 13 instructions (le reste 2)
+            index_to=index_from+_NB_BYTES_LINE;//4 instr
+    
             /*PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
             PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
             PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;*/
@@ -421,7 +424,7 @@ ISR(TIMER1_COMPA_vect)
             for (; index_from < index_to;) //boucle : 5  cycles car index int (on veut passer 32 instructions par tour)
             {
                 //for 26 instructions
-                index_from++;
+                //index_from++;
                 PORTB = _BLACK;
                 PORTB = _BLACK;
                 PORTB = _BLACK;
@@ -449,14 +452,14 @@ ISR(TIMER1_COMPA_vect)
                 PORTB = _BLACK;
                 PORTB = _BLACK;
                 
-                PORTB = _BLACK;
-                PORTB = _BLACK;
-                /*PORTB = tmp%4;//2 instruction
-                tmp2=tmp;//2 instructions
-                tmp2=tmp2>>2;//4 instructions (?)
-                index_from++;// 1 instr
+                //PORTB = _BLACK;
+                //PORTB = _BLACK;
+                PORTB = tmp%4;//1 instruction
+                tmp2=tmp;//1 instructions
+                //tmp2=tmp2>>2;//4 instructions (?)
+                index_from++;// 1 instr (!)
                 
-                PORTB = tmp2%4;//2 instruction
+                /*PORTB = tmp2%4;//2 instruction
                 tmp=memVideo[index_from];//4 instructions
                 tmp2=tmp2>>2;//4 instructions (?)
                 
@@ -608,8 +611,11 @@ ISR(TIMER1_COMPA_vect)
             PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
             
             //PORTB = _WHITE;    _delay_us(52);
-            index_from=0;
-            index_to=26;
+            //index_from=0;
+            //index_to=26;
+            
+            index_from=(ligne>>2)*_NB_BYTES_LINE; //la multiplication fait environ 13 instructions (le reste 2)
+            index_to=index_from+_NB_BYTES_LINE;//4 instr
 
             /*PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
             PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
@@ -619,7 +625,7 @@ ISR(TIMER1_COMPA_vect)
             for (; index_from < index_to;) //boucle : 5  cycles car index int (on veut passer 32 instructions par tour)
             {
                 //for 26 instructions
-                index_from++;
+                //index_from++;
                 PORTB = _BLACK;
                 PORTB = _BLACK;
                 PORTB = _BLACK;
@@ -647,14 +653,14 @@ ISR(TIMER1_COMPA_vect)
                 PORTB = _BLACK;
                 PORTB = _BLACK;
                 
-                PORTB = _BLACK;
-                PORTB = _BLACK;
-                /*PORTB = tmp%4;//2 instruction
-                tmp2=tmp;//2 instructions
-                tmp2=tmp2>>2;//4 instructions (?)
-                index_from++;// 1 instr
+                //PORTB = _BLACK;
+                //PORTB = _BLACK;
+                PORTB = tmp%4;//1 instruction
+                tmp2=tmp;//1 instructions
+                //tmp2=tmp2>>2;//4 instructions (?)
+                index_from++;// 1 instr (!)
                 
-                PORTB = tmp2%4;//2 instruction
+                /*PORTB = tmp2%4;//2 instruction
                 tmp=memVideo[index_from];//4 instructions
                 tmp2=tmp2>>2;//4 instructions (?)
                 
