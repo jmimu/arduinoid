@@ -39,7 +39,7 @@
 #define _GRAY_H  0x02
 #define _WHITE  0x03
 
-#define _LONG_SYNC 30
+#define _LONG_SYNC 28
 #define _LONG_SYNC_DELAI 2
 #define _SHORT_SYNC 2
 #define _SHORT_SYNC_DELAI 30
@@ -209,36 +209,46 @@ void draw_video_line()
     // HSync
     SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
     // Black
-    SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(4);//avant, 9
+    SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(7);//avant, 9
     
-    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
+    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
+    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
     //PORTB = _BLACK;    PORTB = _BLACK; PORTB = _BLACK;    PORTB = _BLACK; PORTB = _BLACK;    PORTB = _BLACK; PORTB = _BLACK;    PORTB = _BLACK;
     //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
     //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK; //enleve ca pour faire les calculs d'index
     
     //_NB_BYTES_LINE 26 //1 octet = 4 pix => 104 col
     // _NB_LIGNES 76 // 76 = 304/4  => pixels carres pour 104 en hz (ecran 4/3)
-    index_from=(ligne>>2)*_NB_BYTES_LINE; //la multiplication fait environ 13 instructions (le reste 2)
-    index_to=index_from+_NB_BYTES_LINE;//4 instr
     
-    tmp=memVideo[index_from];//4 instructions
+    //index_from=(ligne>>2)*_NB_BYTES_LINE; //la multiplication fait environ 13 instructions (le reste 2)
+    //index_to=index_from+_NB_BYTES_LINE;//4 instr
+    
+    index_from=0;
+    index_to=52;
+    
+    
+    //tmp=memVideo[index_from];//4 instructions
     for (; index_from < index_to;) //boucle : 5  cycles car index int (on veut passer 32 instructions par tour)
     {
-/*        PORTB = tmp%4;//2 instruction
-        tmp2=tmp;//2 instructions
-        tmp2=tmp2>>2;//4 instructions (?)
+        index_from++;
+        PORTB = _BLACK;
+        PORTB = _BLACK;
+        PORTB = _BLACK;
+        PORTB = _BLACK;
+        PORTB = _BLACK;
+        PORTB = _BLACK;
+        PORTB = _BLACK;
+        PORTB = _BLACK;
         
-        PORTB = tmp2%4;//2 instruction
-        index_from++;// 1 instr
-        tmp2=tmp2>>2;//4 instructions (?)
-        
-        PORTB = tmp2%4;//2 instruction
-        tmp=memVideo[index_from];//4 instructions
-        tmp2=tmp2>>2;//4 instructions (?)
-        
-        PORTB = tmp2%4;//2 instruction
-*/
-
+        PORTB = _BLACK;
+        PORTB = _BLACK;
+        PORTB = _BLACK;
+        //PORTB = _BLACK;
+        //PORTB = _BLACK;
+        //PORTB = _BLACK;
+        //PORTB = _BLACK;
+        //PORTB = _BLACK;
+        /*
         PORTB = tmp%4;//2 instruction
         tmp2=tmp;//2 instructions
         tmp2=tmp2>>2;//4 instructions (?)
@@ -251,11 +261,12 @@ void draw_video_line()
         PORTB = tmp2%4;//2 instruction
         tmp2=tmp2>>2;//4 instructions (?)
         
-        PORTC=0;
+        //PORTC=0;//1 instr
         
         PORTB = tmp2%4;//2 instruction
+        */
     }
-    PORTB = _BLACK;    PORTB = _BLACK;
+    //PORTB = _BLACK;    PORTB = _BLACK;
 }
 
 
@@ -370,29 +381,86 @@ ISR(TIMER1_COMPA_vect)
       break;
 ///////////////////////////////
         //don't draw the 7 first line (not shown in my screen)
-      case 15 ... 16:
+      /*case 15 ... 16:
           //black line
           SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
           SYNC_PORT |= _BV(SYNC_PIN);    //_delay_us(59);
           OCR1A=60<<1;//equivalent au delai en us
-      break;
+      break;*/
 
 //////////////////////////////
-      case 17:
-          //every line
-          for (ligne = 2; ligne < 304; ligne++)//0-304
+      case 15:
+          //begin with some black lines
+          /*for (ligne = 0; ligne < 28; ligne++)//0-304
           {
             //draw_video_line();
             SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
-            SYNC_PORT |= _BV(SYNC_PIN);PORTB = _WHITE;    _delay_us(30);
-            PORTB = _BLACK;    _delay_us(30);
-            //PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
-            //PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
+            SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(60);
+          }*/
+          //every line
+          for (ligne = 0; ligne < 304; ligne++)//0-304
+          {
+            //** synchro
+            PORTB = 0;//no signal
+            // HSync
+            SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
+            // Black
+            SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(7);//avant, 9
+            
+            PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
+            
+            //PORTB = _WHITE;    _delay_us(52);
+            /*index_from=0;
+            index_to=52;
+
+            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
+            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
+            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;*/
+            //tmp=memVideo[index_from];//4 instructions
+            
+            for (tmp=0; tmp < 52;tmp++) //boucle : 5  cycles car index int (on veut passer 32 instructions par tour)
+            {
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                //PORTB = _BLACK;
+                //PORTB = _BLACK;
+                //PORTB = _BLACK;
+                //PORTB = _BLACK;
+            }
+            
+            /*SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
+            SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(30);
+            PORTB = _WHITE;    _delay_us(29);
+            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;*/
           }
           //end frame
           PORTB = _BLACK;//no signal
           // SYNC VERT B
           // ligne 310 SHORT SYNC
+          SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
+          SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
+          OCR1A=_SHORT_SYNC_DELAI<<1;//equivalent au delai en us
+      break;
+
+      case 16:
+          SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
+          SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
+          OCR1A=_SHORT_SYNC_DELAI<<1;//equivalent au delai en us
+      break;
+
+      case 17:
+          // ligne 311 SHORT SYNC
           SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
           SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
           OCR1A=_SHORT_SYNC_DELAI<<1;//equivalent au delai en us
@@ -405,19 +473,6 @@ ISR(TIMER1_COMPA_vect)
       break;
 
       case 19:
-          // ligne 311 SHORT SYNC
-          SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
-          SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
-          OCR1A=_SHORT_SYNC_DELAI<<1;//equivalent au delai en us
-      break;
-
-      case 20:
-          SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
-          SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
-          OCR1A=_SHORT_SYNC_DELAI<<1;//equivalent au delai en us
-      break;
-
-      case 21:
           // ligne 312 SHORT SYNC
           SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
           SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
@@ -425,11 +480,24 @@ ISR(TIMER1_COMPA_vect)
       break;
 
 //////////////////////////////////////////// Second scanline //////////////////////////////////////////
-      case 22:
+      case 20:
           //begin frame
           PORTB = _BLACK;//no signal  
           // SYNC VERT A
           // ligne 1 LONG SYNC
+          SYNC_PORT &= ~_BV(SYNC_PIN); //_delay_us(_LONG_SYNC);
+          OCR1A=_LONG_SYNC<<1;//equivalent au delai en us
+      break;
+
+      case 21:
+          SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_LONG_SYNC_DELAI);
+          SYNC_PORT &= ~_BV(SYNC_PIN); //_delay_us(_LONG_SYNC);
+          OCR1A=_LONG_SYNC<<1;//equivalent au delai en us
+      break;
+
+      case 22:
+          SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_LONG_SYNC_DELAI);
+          // ligne 2 LONG SYNC
           SYNC_PORT &= ~_BV(SYNC_PIN); //_delay_us(_LONG_SYNC);
           OCR1A=_LONG_SYNC<<1;//equivalent au delai en us
       break;
@@ -442,45 +510,32 @@ ISR(TIMER1_COMPA_vect)
 
       case 24:
           SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_LONG_SYNC_DELAI);
-          // ligne 2 LONG SYNC
+          // ligne 3 MIXTE SYNC
           SYNC_PORT &= ~_BV(SYNC_PIN); //_delay_us(_LONG_SYNC);
           OCR1A=_LONG_SYNC<<1;//equivalent au delai en us
       break;
 
       case 25:
           SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_LONG_SYNC_DELAI);
-          SYNC_PORT &= ~_BV(SYNC_PIN); //_delay_us(_LONG_SYNC);
-          OCR1A=_LONG_SYNC<<1;//equivalent au delai en us
-      break;
-
-      case 26:
-          SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_LONG_SYNC_DELAI);
-          // ligne 3 MIXTE SYNC
-          SYNC_PORT &= ~_BV(SYNC_PIN); //_delay_us(_LONG_SYNC);
-          OCR1A=_LONG_SYNC<<1;//equivalent au delai en us
-      break;
-
-      case 27:
-          SYNC_PORT |= _BV(SYNC_PIN); _delay_us(_LONG_SYNC_DELAI);
           SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
           SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
           OCR1A=_SHORT_SYNC_DELAI<<1;//equivalent au delai en us
       break;
 
-      case 28:
+      case 26:
           // ligne 4 SHORT SYNC
           SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
           SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
           OCR1A=_SHORT_SYNC_DELAI<<1;//equivalent au delai en us
       break;
 
-      case 29:
+      case 27:
           SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
           SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
           OCR1A=_SHORT_SYNC_DELAI<<1;//equivalent au delai en us
       break;
 
-      case 30:
+      case 28:
           // ligne 5 SHORT SYNC
           SYNC_PORT &= ~_BV(SYNC_PIN); _delay_us(_SHORT_SYNC);
           SYNC_PORT |= _BV(SYNC_PIN); //_delay_us(_SHORT_SYNC_DELAI);
@@ -489,25 +544,69 @@ ISR(TIMER1_COMPA_vect)
 
 ///////////////////////////////
         //don't draw the 7 first line (not shown in my screen)
-      case 31 ... 32:
+      /*case 31 ... 34:
           //black line
           SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
           SYNC_PORT |= _BV(SYNC_PIN);    //_delay_us(59);
           OCR1A=60<<1;//equivalent au delai en us
           //PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
-      break;
+      break;*/
 
 //////////////////////////////
-      case 33:
-          //every line
-          for (ligne = 2; ligne < 304; ligne++)//0-304
+      case 29:
+          //begin with some black lines
+          /*for (ligne = 0; ligne < 28; ligne++)//0-304
           {
             //draw_video_line();
             SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
-            SYNC_PORT |= _BV(SYNC_PIN);PORTB = _WHITE;    _delay_us(30);
-            PORTB = _BLACK;    _delay_us(30);
-            //PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
-            //PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
+            SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(60);
+          }*/
+          //every line
+          for (ligne = 0; ligne < 304; ligne++)//0-304
+          {
+            //** synchro
+            PORTB = 0;//no signal
+            // HSync
+            SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
+            // Black
+            SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(7);//avant, 9
+            
+            PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
+            
+            //PORTB = _WHITE;    _delay_us(52);
+            /*index_from=0;
+            index_to=52;
+
+            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
+            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
+            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;*/
+            //tmp=memVideo[index_from];//4 instructions
+            
+            for (tmp=0; tmp < 52;tmp++) //boucle : 5  cycles car index int (on veut passer 32 instructions par tour)
+            {
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                //PORTB = _BLACK;
+                //PORTB = _BLACK;
+                //PORTB = _BLACK;
+                //PORTB = _BLACK;
+            }
+            
+            /*SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
+            SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(30);
+            PORTB = _WHITE;    _delay_us(29);
+            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;*/
           }
           //end frame
           PORTB = _BLACK;//no signal
@@ -520,7 +619,7 @@ ISR(TIMER1_COMPA_vect)
 
   }
   where_in_time_int++;
-  if (where_in_time_int>33) where_in_time_int=0;
+  if (where_in_time_int>29) where_in_time_int=0;
   TCNT1=0;//remise a zero du compteur
 }
 
