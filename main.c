@@ -391,14 +391,14 @@ ISR(TIMER1_COMPA_vect)
 //////////////////////////////
       case 15:
           //begin with some black lines
-          /*for (ligne = 0; ligne < 28; ligne++)//0-304
+          for (ligne = 0; ligne < 28; ligne++)//0-304
           {
             //draw_video_line();
             SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
             SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(60);
-          }*/
+          }
           //every line
-          for (ligne = 0; ligne < 304; ligne++)//0-304
+          for (ligne = 28; ligne < 304; ligne++)//0-304
           {
             //** synchro
             PORTB = 0;//no signal
@@ -407,55 +407,15 @@ ISR(TIMER1_COMPA_vect)
             // Black
             SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(7);//avant, 9
             
-            PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;  //  PORTB = _BLACK;  //  PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
-            
-            //PORTB = _WHITE;    _delay_us(52);
-            //index_from=0;
-            //index_to=26;
+            PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;  //  PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
             
             index_from=(ligne>>2)*_NB_BYTES_LINE; //la multiplication fait environ 13 instructions (le reste 2)
             index_to=index_from+_NB_BYTES_LINE;//4 instr
-    
-            /*PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
-            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
-            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;*/
+
             tmp=memVideo[index_from];//4 instructions
             
             for (; index_from < index_to;) //boucle : 5  cycles car index int (on veut passer 32 instructions par tour)
             {
-                //for 26 instructions
-                //have to add 7 instructions to loose time
-                
-                //PORTB = _BLACK;//1 instr to loose time
-/*                PORTB = _BLACK;
-                PORTB = _BLACK;
-                PORTB = _BLACK;
-                PORTB = _BLACK;
-                PORTB = _BLACK;
-                PORTB = _BLACK;*/
-                //PORTB = _BLACK;
-                
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
                 PORTB = tmp%4;//1 instruction
                 PORTB = PORTB;//2 inst to loose time
                 tmp2=tmp;//1 instructions
@@ -476,13 +436,8 @@ ISR(TIMER1_COMPA_vect)
                 
                 PORTB = tmp2%4;//2 instructions
                 PORTB = tmp2%4;//1 instruction to loose time
-                
             }
-            
-            /*SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
-            SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(30);
-            PORTB = _WHITE;    _delay_us(29);
-            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;*/
+
           }
           //end frame
           PORTB = _BLACK;//no signal
@@ -595,14 +550,14 @@ ISR(TIMER1_COMPA_vect)
 //////////////////////////////
       case 29:
           //begin with some black lines
-          /*for (ligne = 0; ligne < 28; ligne++)//0-304
+          for (ligne = 0; ligne < 28; ligne++)//0-304
           {
             //draw_video_line();
             SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
             SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(60);
-          }*/
+          }
           //every line
-          for (ligne = 0; ligne < 304; ligne++)//0-304
+          for (ligne = 28; ligne < 304; ligne++)//0-304
           {
             //** synchro
             PORTB = 0;//no signal
@@ -611,55 +566,15 @@ ISR(TIMER1_COMPA_vect)
             // Black
             SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(7);//avant, 9
             
-            PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;   // PORTB = _BLACK;  //  PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
-            
-            //PORTB = _WHITE;    _delay_us(52);
-            //index_from=0;
-            //index_to=26;
+            PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;   PORTB = _BLACK;  //  PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
             
             index_from=(ligne>>2)*_NB_BYTES_LINE; //la multiplication fait environ 13 instructions (le reste 2)
             index_to=index_from+_NB_BYTES_LINE;//4 instr
 
-            /*PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
-            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
-            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;*/
             tmp=memVideo[index_from];//4 instructions
             
             for (; index_from < index_to;) //boucle : 5  cycles car index int (on veut passer 32 instructions par tour)
             {
-                //for 26 instructions
-                
-                //have to add 7 instructions to loose time
-                //PORTB = _BLACK;//1 instr to loose time
-/*                PORTB = _BLACK;
-                PORTB = _BLACK;
-                PORTB = _BLACK;
-                PORTB = _BLACK;
-                PORTB = _BLACK;
-                PORTB = _BLACK;*/
-                //PORTB = _BLACK;
-                
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
                 PORTB = tmp%4;//1 instruction
                 PORTB = PORTB;//2 inst to loose time
                 tmp2=tmp;//1 instructions
@@ -682,10 +597,6 @@ ISR(TIMER1_COMPA_vect)
                 PORTB = tmp2%4;//1 instruction to loose time
             }
             
-            /*SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
-            SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(30);
-            PORTB = _WHITE;    _delay_us(29);
-            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;*/
           }
           //end frame
           PORTB = _BLACK;//no signal
