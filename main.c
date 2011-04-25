@@ -410,16 +410,18 @@ ISR(TIMER1_COMPA_vect)
             PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
             
             //PORTB = _WHITE;    _delay_us(52);
-            /*index_from=0;
-            index_to=52;
+            index_from=0;
+            index_to=26;
 
-            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
+            /*PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
             PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
             PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;*/
-            //tmp=memVideo[index_from];//4 instructions
+            tmp=memVideo[index_from];//4 instructions
             
-            for (tmp=0; tmp < 52;tmp++) //boucle : 5  cycles car index int (on veut passer 32 instructions par tour)
+            for (; index_from < index_to;) //boucle : 5  cycles car index int (on veut passer 32 instructions par tour)
             {
+                //for 26 instructions
+                index_from++;
                 PORTB = _BLACK;
                 PORTB = _BLACK;
                 PORTB = _BLACK;
@@ -433,10 +435,42 @@ ISR(TIMER1_COMPA_vect)
                 PORTB = _BLACK;
                 PORTB = _BLACK;
                 PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                /*PORTB = tmp%4;//2 instruction
+                tmp2=tmp;//2 instructions
+                tmp2=tmp2>>2;//4 instructions (?)
+                index_from++;// 1 instr
+                
+                PORTB = tmp2%4;//2 instruction
+                tmp=memVideo[index_from];//4 instructions
+                tmp2=tmp2>>2;//4 instructions (?)
+                
+                PORTB = tmp2%4;//2 instruction
+                //tmp2=tmp2>>2;//4 instructions (?)
+                
+                //PORTC=0;//1 instr
+                
+                //PORTB = tmp2%4;//2 instruction
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;*/
+                
             }
             
             /*SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
@@ -574,16 +608,18 @@ ISR(TIMER1_COMPA_vect)
             PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
             
             //PORTB = _WHITE;    _delay_us(52);
-            /*index_from=0;
-            index_to=52;
+            index_from=0;
+            index_to=26;
 
-            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
+            /*PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
             PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;
             PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;*/
-            //tmp=memVideo[index_from];//4 instructions
+            tmp=memVideo[index_from];//4 instructions
             
-            for (tmp=0; tmp < 52;tmp++) //boucle : 5  cycles car index int (on veut passer 32 instructions par tour)
+            for (; index_from < index_to;) //boucle : 5  cycles car index int (on veut passer 32 instructions par tour)
             {
+                //for 26 instructions
+                index_from++;
                 PORTB = _BLACK;
                 PORTB = _BLACK;
                 PORTB = _BLACK;
@@ -597,10 +633,41 @@ ISR(TIMER1_COMPA_vect)
                 PORTB = _BLACK;
                 PORTB = _BLACK;
                 PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
-                //PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                /*PORTB = tmp%4;//2 instruction
+                tmp2=tmp;//2 instructions
+                tmp2=tmp2>>2;//4 instructions (?)
+                index_from++;// 1 instr
+                
+                PORTB = tmp2%4;//2 instruction
+                tmp=memVideo[index_from];//4 instructions
+                tmp2=tmp2>>2;//4 instructions (?)
+                
+                PORTB = tmp2%4;//2 instruction
+                //tmp2=tmp2>>2;//4 instructions (?)
+                
+                //PORTC=0;//1 instr
+                
+                //PORTB = tmp2%4;//2 instruction
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;
+                PORTB = _BLACK;*/
             }
             
             /*SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
