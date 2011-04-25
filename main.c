@@ -45,7 +45,7 @@
 #define _SHORT_SYNC_DELAI 30
 
 #define _NB_BYTES_LINE 26 //1 octet = 4 pix => 104 col
-#define _NB_LIGNES 69 // 76 = 304/4  => pixels carres pour 104 en hz (ecran 4/3) -7 parce qu'on voit pas les 7 permieres lignes
+#define _NB_LIGNES 67 // 76 = 304/4  => pixels carres pour 104 en hz (ecran 4/3) -7 parce qu'on voit pas les 7 permieres lignes -2 parce qu'on ne voit pas les 2 dernieres
 
 //byte memVideo[_NB_BYTES_LINE*_NB_LIGNES];
 unsigned char memVideo[_NB_BYTES_LINE*_NB_LIGNES]={175,214,26,75,175,214,91,90,175,214,26,75,175,214,26,75,175,214,91,90,175,214,26,75,175,214,
@@ -114,7 +114,7 @@ unsigned char memVideo[_NB_BYTES_LINE*_NB_LIGNES]={175,214,26,75,175,214,91,90,1
 255,95,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,197,191,168,174,10,85,85,
 255,159,86,149,86,149,86,149,86,149,86,149,86,149,86,149,86,149,86,197,63,168,170,170,80,149,
 255,95,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,5,128,168,170,170,10,84,
-255,95,149,86,149,86,149,86,149,86,149,86,149,86,149,86,149,86,149,22,234,168,170,170,170,2,
+255,95,149,86,149,86,149,86,149,86,149,86,149,86,149,86,149,86,149,22,234,168,170,170,170,2};/*,
 255,95,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,21,255,163,171,174,170,170,
 254,95,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,252,163,170,170,170,171};/*,//
 190,111,85,101,85,101,85,101,85,101,85,101,85,101,85,101,85,101,85,101,168,170,170,170,174,170,
@@ -162,8 +162,7 @@ void set_pixel(unsigned char x, unsigned char y, unsigned char c)//0<=x<104   0<
 }
 
 
-//en vrai y de 7 a 74
-unsigned char get_pixel(unsigned char x, unsigned char y)//0<=x<104   0<=y<76   0<=return<4
+unsigned char get_pixel(unsigned char x, unsigned char y)//0<=x<104   0<=y<67   0<=return<4
 {
     unsigned char c;
     int x_=x>>2;
@@ -400,7 +399,7 @@ ISR(TIMER1_COMPA_vect)
             //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;    //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;
           }
           //every line
-          for (ligne = 0; ligne < 276; ligne++)//0-304
+          for (ligne = 0; ligne < 268; ligne++)//0-304
           {
             //** synchro
             PORTB = 0;//no signal
@@ -440,6 +439,14 @@ ISR(TIMER1_COMPA_vect)
                 PORTB = tmp2%4;//1 instruction to loose time
             }
 
+          }
+          for (ligne = 0; ligne < 8; ligne++)//0-304
+          {
+            //draw_video_line();
+            SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
+            SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(59);
+            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;    PORTB = _BLACK;PORTB = _BLACK;//PORTB = _BLACK;PORTB = _BLACK;
+            //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;    //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;
           }
           //end frame
           PORTB = _BLACK;//no signal
@@ -562,7 +569,7 @@ ISR(TIMER1_COMPA_vect)
 
           }
           //every line
-          for (ligne = 0; ligne < 276; ligne++)//0-304
+          for (ligne = 0; ligne < 268; ligne++)//0-304
           {
             //** synchro
             PORTB = 0;//no signal
@@ -602,6 +609,14 @@ ISR(TIMER1_COMPA_vect)
                 PORTB = tmp2%4;//1 instruction to loose time
             }
             
+          }
+          for (ligne = 0; ligne < 8; ligne++)//0-304
+          {
+            //draw_video_line();
+            SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
+            SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(59);
+            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;    PORTB = _BLACK;PORTB = _BLACK;//PORTB = _BLACK;PORTB = _BLACK;
+            //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;    //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;
           }
           //end frame
           PORTB = _BLACK;//no signal
@@ -665,7 +680,7 @@ int main()
         y=y+vy;
         if (x>=104) {vx=-vx;x=103;}
         if (x<0)    {vx=-vx;x=0;}
-        if (y>=69)  {vy=-vy;y=68;}
+        if (y>=67)  {vy=-vy;y=66;}
         if (y<0)    {vy=-vy;y=0;}
         ball_previous_pix_color=get_pixel(x,y);
         set_pixel(x,y,(((~ball_previous_pix_color)&3)>>1)*3);
