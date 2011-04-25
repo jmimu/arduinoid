@@ -131,6 +131,12 @@ unsigned char tiles[32]={0,0, 84, 5,169,27, 84, 5,
 0,0, 94,45,243,51, 94,45};
 //tiles corresponds to bricks: 8*4 pixels => 2*4 bytes
 
+//blocks[y][x]  //-1 = nothing
+signed char blocks[8][10]={{3,3,3,3,3,3,3,3,3,3},{3,3,3,3,3,3,3,3,3,3},
+{2,2,2,2,2,2,2,2,2,2},{2,2,2,2,2,2,2,2,2,2},
+{1,1,1,1,1,1,1,1,1,1},{1,1,1,1,1,1,1,1,1,1},
+{0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0}};
+
 
 unsigned char tmp,tmp2;
 int index_from, index_to;//for one line, go from to
@@ -223,11 +229,11 @@ void cls_some_lines(int y1,int y2)
 
 // draw a tile 8*4 pix at coords x, y, x=4*x_
 // i = type of brick (-1 => black)
-void draw_tile(unsigned char x, unsigned char y, int i)
+void draw_tile(unsigned char x, unsigned char y, signed char i)
 {
     unsigned char x_=x>>2;
     int video_index=y*_NB_BYTES_LINE+x_;
-    if (i!=-1)
+    if (i>=0)
     {
         int tile_index=i<<3;
         memVideo[video_index]=tiles[tile_index];
@@ -257,73 +263,15 @@ void draw_tile(unsigned char x, unsigned char y, int i)
     }
 }
 
-void draw_video_line()
-{
-    //** synchro
-    PORTB = 0;//no signal
-    // HSync
-    SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
-    // Black
-    SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(7);//avant, 9
-    
-    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
-    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
-    //PORTB = _BLACK;    PORTB = _BLACK; PORTB = _BLACK;    PORTB = _BLACK; PORTB = _BLACK;    PORTB = _BLACK; PORTB = _BLACK;    PORTB = _BLACK;
-    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
-    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK; //enleve ca pour faire les calculs d'index
-    
-    //_NB_BYTES_LINE 26 //1 octet = 4 pix => 104 col
-    // _NB_LIGNES 76 // 76 = 304/4  => pixels carres pour 104 en hz (ecran 4/3)
-    
-    //index_from=(ligne>>2)*_NB_BYTES_LINE; //la multiplication fait environ 13 instructions (le reste 2)
-    //index_to=index_from+_NB_BYTES_LINE;//4 instr
-    
-    index_from=0;
-    index_to=52;
-    
-    
-    //tmp=memVideo[index_from];//4 instructions
-    for (; index_from < index_to;) //boucle : 5  cycles car index int (on veut passer 32 instructions par tour)
-    {
-        index_from++;
-        PORTB = _BLACK;
-        PORTB = _BLACK;
-        PORTB = _BLACK;
-        PORTB = _BLACK;
-        PORTB = _BLACK;
-        PORTB = _BLACK;
-        PORTB = _BLACK;
-        PORTB = _BLACK;
-        
-        PORTB = _BLACK;
-        PORTB = _BLACK;
-        PORTB = _BLACK;
-        //PORTB = _BLACK;
-        //PORTB = _BLACK;
-        //PORTB = _BLACK;
-        //PORTB = _BLACK;
-        //PORTB = _BLACK;
-        /*
-        PORTB = tmp%4;//2 instruction
-        tmp2=tmp;//2 instructions
-        tmp2=tmp2>>2;//4 instructions (?)
-        index_from++;// 1 instr
-        
-        PORTB = tmp2%4;//2 instruction
-        tmp=memVideo[index_from];//4 instructions
-        tmp2=tmp2>>2;//4 instructions (?)
-        
-        PORTB = tmp2%4;//2 instruction
-        tmp2=tmp2>>2;//4 instructions (?)
-        
-        //PORTC=0;//1 instr
-        
-        PORTB = tmp2%4;//2 instruction
-        */
-    }
-    //PORTB = _BLACK;    PORTB = _BLACK;
-}
 
+void draw_all_blocks(unsigned int x,unsigned int y)
+{
+    int i,j;
+    for (j=0;j<8;j++)
+        for (i=0;i<10;i++)
+            draw_tile(x+(i<<3),y+(j<<2),blocks[j][i]);
+    
+}
 
 //ce qui se fait a chaque interruption
 ISR(TIMER1_COMPA_vect)
@@ -466,7 +414,7 @@ ISR(TIMER1_COMPA_vect)
             // Black
             SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(7);//avant, 9
             
-            PORTB = _BLACK;    PORTB = _BLACK;   // PORTB = _BLACK;  //  PORTB = _BLACK;  //  PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
+            // PORTB = _BLACK;  //  PORTB = _BLACK;  //  PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
             
             index_from=(ligne>>2)*_NB_BYTES_LINE; //la multiplication fait environ 13 instructions (le reste 2)
             index_to=index_from+_NB_BYTES_LINE;//4 instr
@@ -496,6 +444,7 @@ ISR(TIMER1_COMPA_vect)
                 PORTB = tmp2%4;//2 instructions
                 PORTB = tmp2%4;//1 instruction to loose time
             }
+            PORTB = _BLACK;    PORTB = _BLACK;   
 
           }
           for (ligne = 0; ligne < 8; ligne++)//0-304
@@ -637,7 +586,7 @@ ISR(TIMER1_COMPA_vect)
             // Black
             SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(7);//avant, 9
             
-            PORTB = _BLACK;    PORTB = _BLACK;    //PORTB = _BLACK;  // PORTB = _BLACK;  //  PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
+            //PORTB = _BLACK;  // PORTB = _BLACK;  //  PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
             
             index_from=(ligne>>2)*_NB_BYTES_LINE; //la multiplication fait environ 13 instructions (le reste 2)
             index_to=index_from+_NB_BYTES_LINE;//4 instr
@@ -667,7 +616,7 @@ ISR(TIMER1_COMPA_vect)
                 PORTB = tmp2%4;//2 instructions
                 PORTB = tmp2%4;//1 instruction to loose time
             }
-            
+            PORTB = _BLACK;    PORTB = _BLACK;    
           }
           for (ligne = 0; ligne < 8; ligne++)//0-304
           {
@@ -692,6 +641,8 @@ ISR(TIMER1_COMPA_vect)
   TCNT1=0;//remise a zero du compteur
 }
 
+#define BLOCKS_X 12
+#define BLOCKS_Y 8
 
 
 int main()
@@ -717,53 +668,96 @@ int main()
     INPUT_DDR &= ~_BV(INPUT_PIN_1);*/
 
     //unsigned char c=0;
-
+    int i,j;
     int x=0;
     int y=0;
+    int x_old=0;
+    int y_old=0;
     int vx=1;
     int vy=1;
     int x_player=20;
-    int y_player=50;
+    int y_player=55;
     unsigned char ball_previous_pix_color=0;
 
+    //cls();
+    draw_all_blocks(BLOCKS_X,BLOCKS_Y);
     while(1)
     {
-        if ((INPUT_PORT & _BV(INPUT_PIN_0))) x_player--;
-        if ((INPUT_PORT & _BV(INPUT_PIN_1))) x_player++;
+        if ((INPUT_PORT & _BV(INPUT_PIN_0))) x_player-=2;
+        if ((INPUT_PORT & _BV(INPUT_PIN_1))) x_player+=2;
 
         //ball
-        set_pixel(x,y,ball_previous_pix_color);
-
+        x_old=x;
+        y_old=y;
         x=x+vx;
         y=y+vy;
-        if (x>=104) {vx=-vx;x=103;}
-        if (x<0)    {vx=-vx;x=0;}
-        if (y>=69)  {vy=-vy;y=68;}
-        if (y<0)    {vy=-vy;y=0;}
 
-        if (x_player>=104-48) {x_player=104-48;}
-        if (x_player<0)    {x_player=0;}
+        for (j=0;j<8;j++)
+            for (i=0;i<10;i++)
+            {
+                /*if ((blocks[j][i]>=0) && (x>=(BLOCKS_X+(i<<3))) && (x<(BLOCKS_X+(i<<3))+8) && (y>=(BLOCKS_Y+(j<<2))) && (y<(BLOCKS_Y+(j<<2))+4))
+                {
+                    vx=-vx;vy=-vy;blocks[j][i]--;
+                }*/
+                if ((blocks[j][i]>=0) && ((x==(BLOCKS_X+(i<<3))) || (x==(BLOCKS_X+(i<<3))+7)) && (y>=(BLOCKS_Y+(j<<2))) && (y<(BLOCKS_Y+(j<<2))+4))
+                {
+                    vx=-vx;blocks[j][i]--;draw_tile(BLOCKS_X+(i<<3),BLOCKS_Y+(j<<2),blocks[j][i]);x=x+vx;
+                }
+                if ((blocks[j][i]>=0) && (x>=(BLOCKS_X+(i<<3))) && (x<(BLOCKS_X+(i<<3))+8) && ((y==(BLOCKS_Y+(j<<2))) || (y==(BLOCKS_Y+(j<<2))+3)))
+                {
+                    vy=-vy;blocks[j][i]--;draw_tile(BLOCKS_X+(i<<3),BLOCKS_Y+(j<<2),blocks[j][i]);y=y+vy;
+                }
+            }
+        if ((x>=x_player) && (x<x_player+32) && (y==y_player) && (vy>0))
+        {
+            vy=-vy;y=y+vy;
+        }
+        
+        if (x>=96) {vx=-vx;x=95;}
+        if (x<8)    {vx=-vx;x=8;}
+        if (y>=64)  {vy=-vy;y=63;}
+        if (y<4)    {vy=-vy;y=4;}
+            
+        if (x_player>=96-28) {x_player=96-1-28;}
+        if (x_player<8)    {x_player=8;}
 
         //cls_some_lines(y_player,y_player+3);
-        draw_tile( x_player,y_player,-1);
-        draw_tile( x_player+8,y_player,0);
-        draw_tile( x_player+16,y_player,1);
-        draw_tile( x_player+24,y_player,2);
-        draw_tile( x_player+32,y_player,3);
-        draw_tile( x_player+40,y_player,-1);
+        //a chaque balle perdu on diminue la taille de la raquette !
+        draw_tile( x_player-8,y_player,-1);
+        draw_tile( x_player,y_player,3);
+        draw_tile( x_player+8,y_player,3);
+        draw_tile( x_player+16,y_player,3);
+        draw_tile( x_player+24,y_player,3);
+        draw_tile( x_player+32,y_player,-1);
+        //draw_tile( x_player+16,y_player,1);
+        //draw_tile( x_player+24,y_player,2);
+        //draw_tile( x_player+32,y_player,3);
+        //draw_tile( x_player+40,y_player,-1);
 
-        ball_previous_pix_color=get_pixel(x,y);
-        set_pixel(x,y,(((~ball_previous_pix_color)&3)>>1)*3);
+        //ball_previous_pix_color=get_pixel(x,y);
+        //set_pixel(x,y,(((~ball_previous_pix_color)&3)>>1)*3);
+        /*set_pixel(x-1,y-1,_BLACK);
+        set_pixel(x+1,y-1,_BLACK);
+        set_pixel(x+1,y+1,_BLACK);
+        set_pixel(x-1,y+1,_BLACK);*/
+        set_pixel(x_old,y_old,_BLACK);
+        set_pixel(x,y,_WHITE);
         
-        _delay_us(500);
-/*        for (c=0;c<4;c++)
-            for (y=0;y<76;y++)
-                for (x=y%2;x<104;x+=2)
-                    set_pixel(x,y,c);*/
+        //_delay_us(500);
+
     }
 
     return(0);
 }
 
+
+void contact_with_all_blocks(unsigned int x,unsigned int y)
+{
+    int i,j;
+    for (j=0;j<8;j++)
+        for (i=0;i<10;i++)
+            draw_tile(x+(i<<3),y+(j<<2),blocks[j][i]);
+    
+}
 
 
