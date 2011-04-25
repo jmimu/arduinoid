@@ -222,27 +222,39 @@ void cls_some_lines(int y1,int y2)
 }
 
 // draw a tile 8*4 pix at coords x, y, x=4*x_
-// i = type of brick
-void draw_tile(unsigned char x, unsigned char y, unsigned char i)
+// i = type of brick (-1 => black)
+void draw_tile(unsigned char x, unsigned char y, int i)
 {
     unsigned char x_=x>>2;
     int video_index=y*_NB_BYTES_LINE+x_;
-    int tile_index=i<<3;
-    memVideo[video_index]=tiles[tile_index];
-    video_index++;tile_index++;
-    memVideo[video_index]=tiles[tile_index];
-    video_index+=_NB_BYTES_LINE-1;tile_index++;
-    memVideo[video_index]=tiles[tile_index];
-    video_index++;tile_index++;
-    memVideo[video_index]=tiles[tile_index];
-    video_index+=_NB_BYTES_LINE-1;tile_index++;
-    memVideo[video_index]=tiles[tile_index];
-    video_index++;tile_index++;
-    memVideo[video_index]=tiles[tile_index];
-    video_index+=_NB_BYTES_LINE-1;tile_index++;
-    memVideo[video_index]=tiles[tile_index];
-    video_index++;tile_index++;
-    memVideo[video_index]=tiles[tile_index];
+    if (i!=-1)
+    {
+        int tile_index=i<<3;
+        memVideo[video_index]=tiles[tile_index];
+        video_index++;tile_index++;
+        memVideo[video_index]=tiles[tile_index];
+        video_index+=_NB_BYTES_LINE-1;tile_index++;
+        memVideo[video_index]=tiles[tile_index];
+        video_index++;tile_index++;
+        memVideo[video_index]=tiles[tile_index];
+        video_index+=_NB_BYTES_LINE-1;tile_index++;
+        memVideo[video_index]=tiles[tile_index];
+        video_index++;tile_index++;
+        memVideo[video_index]=tiles[tile_index];
+        video_index+=_NB_BYTES_LINE-1;tile_index++;
+        memVideo[video_index]=tiles[tile_index];
+        video_index++;tile_index++;
+        memVideo[video_index]=tiles[tile_index];
+    }else{
+        memVideo[video_index]=0;        video_index++;
+        memVideo[video_index]=0;        video_index+=_NB_BYTES_LINE-1;
+        memVideo[video_index]=0;        video_index++;
+        memVideo[video_index]=0;        video_index+=_NB_BYTES_LINE-1;
+        memVideo[video_index]=0;        video_index++;
+        memVideo[video_index]=0;        video_index+=_NB_BYTES_LINE-1;
+        memVideo[video_index]=0;        video_index++;
+        memVideo[video_index]=0;        video_index+=_NB_BYTES_LINE-1;
+    }
 }
 
 void draw_video_line()
@@ -433,6 +445,7 @@ ISR(TIMER1_COMPA_vect)
 
 //////////////////////////////
       case 15:
+          OCR1A=0xffff;//to avoid troubles
           //begin with some black lines
           for (ligne = 0; ligne < 28; ligne++)//0-304
           {
@@ -442,6 +455,7 @@ ISR(TIMER1_COMPA_vect)
             PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;    PORTB = _BLACK;PORTB = _BLACK;//PORTB = _BLACK;PORTB = _BLACK;
             //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;    //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;
           }
+          TCNT1=0;//remise a zero du compteur
           //every line
           for (ligne = 0; ligne < 268; ligne++)//0-304
           {
@@ -602,6 +616,7 @@ ISR(TIMER1_COMPA_vect)
 
 //////////////////////////////
       case 29:
+          OCR1A=0xffff;//to avoid troubles
           //begin with some black lines
           for (ligne = 0; ligne < 28; ligne++)//0-304
           {
@@ -610,8 +625,8 @@ ISR(TIMER1_COMPA_vect)
             SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(59);
             PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;    PORTB = _BLACK;PORTB = _BLACK;//PORTB = _BLACK;PORTB = _BLACK;
             //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;    //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;
-
           }
+          TCNT1=0;//remise a zero du compteur
           //every line
           for (ligne = 0; ligne < 268; ligne++)//0-304
           {
@@ -726,14 +741,16 @@ int main()
         if (y>=69)  {vy=-vy;y=68;}
         if (y<0)    {vy=-vy;y=0;}
 
-        if (x_player>=104-40) {x_player=103-40;}
+        if (x_player>=104-48) {x_player=104-48;}
         if (x_player<0)    {x_player=0;}
 
-        cls_some_lines(y_player,y_player+3);
-        draw_tile( x_player,y_player,0);
-        draw_tile( x_player+8,y_player,1);
-        draw_tile( x_player+16,y_player,2);
-        draw_tile( x_player+24,y_player,3);
+        //cls_some_lines(y_player,y_player+3);
+        draw_tile( x_player,y_player,-1);
+        draw_tile( x_player+8,y_player,0);
+        draw_tile( x_player+16,y_player,1);
+        draw_tile( x_player+24,y_player,2);
+        draw_tile( x_player+32,y_player,3);
+        draw_tile( x_player+40,y_player,-1);
 
         ball_previous_pix_color=get_pixel(x,y);
         set_pixel(x,y,(((~ball_previous_pix_color)&3)>>1)*3);
