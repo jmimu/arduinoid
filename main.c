@@ -45,7 +45,7 @@
 #define _SHORT_SYNC_DELAI 30
 
 #define _NB_BYTES_LINE 26 //1 octet = 4 pix => 104 col
-#define _NB_LIGNES 76 // 76 = 304/4  => pixels carres pour 104 en hz (ecran 4/3) -7 parce qu'on voit pas les 7 permieres lignes
+#define _NB_LIGNES 69 // 76 = 304/4  => pixels carres pour 104 en hz (ecran 4/3) -7 parce qu'on voit pas les 7 permieres lignes
 
 //byte memVideo[_NB_BYTES_LINE*_NB_LIGNES];
 unsigned char memVideo[_NB_BYTES_LINE*_NB_LIGNES]={175,214,26,75,175,214,91,90,175,214,26,75,175,214,26,75,175,214,91,90,175,214,26,75,175,214,
@@ -396,7 +396,7 @@ ISR(TIMER1_COMPA_vect)
             //draw_video_line();
             SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
             SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(59);
-            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;    //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;
+            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;    PORTB = _BLACK;PORTB = _BLACK;//PORTB = _BLACK;PORTB = _BLACK;
             //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;    //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;
           }
           //every line
@@ -409,7 +409,7 @@ ISR(TIMER1_COMPA_vect)
             // Black
             SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(7);//avant, 9
             
-            PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;  //  PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
+            PORTB = _BLACK;    PORTB = _BLACK;   // PORTB = _BLACK;  //  PORTB = _BLACK;  //  PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
             
             index_from=(ligne>>2)*_NB_BYTES_LINE; //la multiplication fait environ 13 instructions (le reste 2)
             index_to=index_from+_NB_BYTES_LINE;//4 instr
@@ -557,7 +557,7 @@ ISR(TIMER1_COMPA_vect)
             //draw_video_line();
             SYNC_PORT &= ~_BV(SYNC_PIN);   _delay_us(4);
             SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(59);
-            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;    //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;
+            PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;PORTB = _BLACK;    PORTB = _BLACK;PORTB = _BLACK;//PORTB = _BLACK;PORTB = _BLACK;
             //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;    //PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;//PORTB = _BLACK;
 
           }
@@ -571,7 +571,7 @@ ISR(TIMER1_COMPA_vect)
             // Black
             SYNC_PORT |= _BV(SYNC_PIN);    _delay_us(7);//avant, 9
             
-            PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;   PORTB = _BLACK;  //  PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
+            PORTB = _BLACK;    PORTB = _BLACK;    //PORTB = _BLACK;  // PORTB = _BLACK;  //  PORTB = _BLACK;    //PORTB = _BLACK;    PORTB = _BLACK;    PORTB = _BLACK;
             
             index_from=(ligne>>2)*_NB_BYTES_LINE; //la multiplication fait environ 13 instructions (le reste 2)
             index_to=index_from+_NB_BYTES_LINE;//4 instr
