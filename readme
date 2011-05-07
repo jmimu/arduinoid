@@ -1,0 +1,10 @@
+Arduinoid : a Breakout/Arkanoid clone on an Arduino.
+
+2011 jmimu
+
+* Electronic scheme is given in schema.fz (use Fritzing to open it).
+* type "make upload" to make and upload program on the arduino
+* use img_2bits/img_to_2b.py to convert your images into 2b format (used in videoJM.c)
+
+
+
