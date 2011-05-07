@@ -17,6 +17,8 @@
   
   input : pin 2 and pin 3
 
+
+  use TIMER1_COMPA
  */
 
 #define SYNC_DDR DDRD
@@ -51,6 +53,11 @@
 #define _NB_LIGNES 67 // 76 = 304/4  => pixels carres pour 104 en hz (ecran 4/3) -7 parce qu'on voit pas les 7 permieres lignes -2 parce qu'on ne voit pas les 2 dernieres
 
 
+
+extern unsigned char memVideo[_NB_BYTES_LINE*_NB_LIGNES];
+extern unsigned char tiles[8*7];
+
+void init_video();
 
 void set_pixel(unsigned char x, unsigned char y, unsigned char c);//0<=x<104   0<=y<76   0<=c<4
 unsigned char get_pixel(unsigned char x, unsigned char y);//0<=x<104   0<=y<67   0<=return<4

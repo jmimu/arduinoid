@@ -10,21 +10,7 @@
 
 int main()
 {
-  //interruptions timer
-    TCCR1B=0;//reinit les 3 registres config de TCNT1 (timer/counter1)
-    TCCR1A=0;
-    TCCR1C=0;
-    OCR1A = 0x100;//temps de comparaison A pour TCNT1
-    //OCR1B = 0x4ff;//temps de comparaison B pour TCNT1
-    TCCR1B|=(0<<CS12)|(1<<CS11)|(0<<CS10);//prescaleur : 0 1 0 => 8 => 65535/(16000000/16) = 1/16s, 1 sur le compteur = 0.5us
-    TIMSK1|=(1<<OCIE1A)|(0<<OCIE1B)|(0<<TOIE1);//on veut des interruptions pour temps A seulement
-    //Enable Global Interrupts
-    sei();  
-  
-    INPUT_DDR=0;
-    SYNC_DDR |= _BV(SYNC_PIN);
-    SIG_1_DDR |= _BV(SIG_1_PIN);
-    SIG_2_DDR |= _BV(SIG_2_PIN);
+    init_video();
 
     //prepare input
     /*INPUT_DDR &= ~_BV(INPUT_PIN_0);
